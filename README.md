@@ -39,6 +39,10 @@ ModerationAnalyzer is a FastAPI-based service for analyzing and moderating text,
 
 ## Running the Application
 Before running the info make the folder named nfsw_model and put the nsfw model in it preferrably nsfw.299×299.h5
+The link for nsfw folder containg the model with .h5 extension
+```sh
+https://drive.google.com/drive/folders/1lq-cZm6vqRbb03iWxYPZjPjcyg8AKN_b?usp=drive_link
+```
 ```sh
 python main.py
 ```
