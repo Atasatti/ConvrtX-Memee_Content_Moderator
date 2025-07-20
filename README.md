@@ -18,7 +18,7 @@ ModerationAnalyzer is a FastAPI-based service for analyzing and moderating text,
 ## Installation
 1. **Clone the repository:**
    ```sh
-   git clone <repo-url>
+   git clone https://github.com/Atasatti/ConvrtX-Memee_Content_Moderator
    cd ModerationAnalyzer
    ```
 2. **Install Python dependencies:**
