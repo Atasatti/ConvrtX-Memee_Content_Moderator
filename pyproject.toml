@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "moderationanalyzer"
+version = "0.1.0"
+description = ""
+authors = ["None"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+fastapi = {extras = ["all"], version = "^0.115.5"}
+numpy = "^2.1.3"
+pandas = "^2.2.3"
+opencv-python = "^4.10.0.84"
+openai = "^1.54.4"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
