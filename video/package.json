@@ -2,6 +2,7 @@
   "name": "aegis-video",
   "version": "1.0.0",
   "private": true,
+  "license": "UNLICENSED",
   "type": "module",
   "description": "Builds the Aegis product demo video from the real running app.",
   "scripts": {

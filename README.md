@@ -66,3 +66,9 @@ Note that an OpenAI key was committed to this repository's history before that
 rule existed. It is no longer tracked, but it remains reachable in past commits
 and **should be rotated** at
 [platform.openai.com](https://platform.openai.com/account/api-keys).
+
+## Licence
+
+Proprietary — copyright (c) 2026 Ata Ul Haq, all rights reserved. The source is
+published for portfolio purposes only; no licence to use, copy, modify, or
+distribute it is granted. See [LICENSE](LICENSE).
