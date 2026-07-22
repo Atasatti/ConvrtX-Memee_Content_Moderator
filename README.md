@@ -3,9 +3,20 @@
 Content moderation for text, images, audio, and video — a FastAPI service and a
 Next.js operator console.
 
-**[▶ Watch the demo](https://youtu.be/9hSEKJ_aumE)** — a walkthrough of the
-running app: policy scoring, contact-info detection, NSFW image classification,
-and video frame sampling. Every figure shown is live output from the models.
+<p align="center">
+  <a href="https://youtu.be/9hSEKJ_aumE">
+    <img src="https://img.youtube.com/vi/9hSEKJ_aumE/maxresdefault.jpg"
+         alt="Watch the Aegis demo" width="760">
+  </a>
+</p>
+
+<p align="center">
+  <a href="https://youtu.be/9hSEKJ_aumE"><b>▶ Watch the demo</b></a> · 63s
+</p>
+
+A walkthrough of the running app: policy scoring, contact-info detection, NSFW
+image classification, and video frame sampling. Every figure shown is live
+output from the models.
 
 ```
 .
