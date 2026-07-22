@@ -1,6 +1,6 @@
 # Aegis — frontend
 
-Next.js 16 operator console for the Memee content moderation API, built on a
+Next.js 16 operator console for the Aegis content moderation API, built on a
 strict **MVVM** separation.
 
 ## Running

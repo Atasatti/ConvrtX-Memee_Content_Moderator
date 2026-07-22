@@ -3,6 +3,10 @@
 Content moderation for text, images, audio, and video — a FastAPI service and a
 Next.js operator console.
 
+**[▶ Watch the demo](https://youtu.be/9hSEKJ_aumE)** — a walkthrough of the
+running app: policy scoring, contact-info detection, NSFW image classification,
+and video frame sampling. Every figure shown is live output from the models.
+
 ```
 .
 ├── backend/     FastAPI + OpenAI + a local NSFW model
@@ -66,10 +70,9 @@ Uploaded media itself is not archived.
 `.env` is gitignored and must never be committed — it holds your OpenAI key.
 Use `backend/.env.example` as the template.
 
-Note that an OpenAI key was committed to this repository's history before that
-rule existed. It is no longer tracked, but it remains reachable in past commits
-and **should be rotated** at
-[platform.openai.com](https://platform.openai.com/account/api-keys).
+The test fixtures under `backend/Data for testing apis/` are also excluded: they
+include explicit imagery used to exercise the NSFW classifier and are not
+appropriate for a public repository.
 
 ## Licence
 

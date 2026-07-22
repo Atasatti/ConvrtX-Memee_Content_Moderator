@@ -9,7 +9,7 @@ export const metadata: Metadata = {
     template: "%s · Aegis",
   },
   description:
-    "Operator console for the Memee content moderation API: text, image, audio, and video analysis.",
+    "Operator console for the Aegis content moderation API: text, image, audio, and video analysis.",
 };
 
 export default function RootLayout({

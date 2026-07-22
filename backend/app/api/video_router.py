@@ -24,7 +24,7 @@ import tensorflow as tf
 import logging
 
 try:
-    # Get the absolute path to the project root (i.e., ConvrtX-Memee_Content_Moderator)
+    # Get the absolute path to the backend package root
     BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     
     # Build the correct absolute path to the model

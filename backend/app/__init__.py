@@ -8,7 +8,7 @@ from .api.history_router import history_router
 
 # Main router that includes all sub-routers
 app = FastAPI(
-        title="Memee API",
+        title="Aegis API",
         description="Handling of Comment, Audio, Image and Video file using OpenAI (whisper and Moderation) and NSFW Model",
         version="1.0.0",
     )
