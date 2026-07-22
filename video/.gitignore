@@ -1,0 +1,9 @@
+node_modules/
+
+# Raw screencast frames (~220 MB) and ffmpeg intermediates — both regenerable.
+raw/
+work/
+
+# Copies of the test uploads under neutral filenames. One of these is the
+# explicit NSFW fixture; it must never be committed.
+demo-assets/
