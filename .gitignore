@@ -1,0 +1,33 @@
+# ---- Secrets ----
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# ---- Python ----
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+env/
+venv/
+
+# ---- ML weights (downloaded separately, see backend/README.md) ----
+*.h5
+
+# ---- Local runtime database ----
+database/history/*.sqlite3
+database/history/*.sqlite3-*
+
+# ---- Node / Next.js ----
+node_modules/
+.next/
+out/
+build/
+next-env.d.ts
+*.tsbuildinfo
+
+# ---- Editor / OS ----
+.DS_Store
+.idea/
+*.swp
