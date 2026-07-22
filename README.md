@@ -1,79 +1,68 @@
-# ModerationAnalyzer
+# Aegis
 
-## Overview
-ModerationAnalyzer is a FastAPI-based service for analyzing and moderating text, images, audio, and video content. It leverages OpenAI's models for text moderation, phone number detection, and audio transcription (Whisper), as well as a custom NSFW model for image and video analysis.
+Content moderation for text, images, audio, and video — a FastAPI service and a
+Next.js operator console.
 
-## Features
-- **Text Moderation:** Detects inappropriate, harmful, or sensitive content and phone numbers in text.
-- **Image Moderation:** Classifies images into NSFW categories and extracts/analyzes text from images.
-- **Audio Moderation:** Transcribes audio files and analyzes the transcribed text for moderation.
-- **Video Moderation:** Analyzes video frames for NSFW content and transcribes/analyzes audio from videos.
-
-## Requirements
-- Python 3.12+
-- See `requirements.txt` for Python dependencies
-- FFmpeg (must be installed and available in your system PATH)
-- Pre-trained NSFW model (`nsfw.299x299.h5` in `nfsw_model/`)
-
-## Installation
-1. **Clone the repository:**
-   ```sh
-   git clone https://github.com/Atasatti/ConvrtX-Memee_Content_Moderator
-   cd ModerationAnalyzer
-   ```
-2. **Install Python dependencies:**
-   ```sh
-   pip install -r requirements.txt
-   ```
-3. **Install FFmpeg:**
-   - Windows: Use [WinGet](https://learn.microsoft.com/en-us/windows/package-manager/winget/) or download from [ffmpeg.org](https://ffmpeg.org/download.html)
-   - Linux/macOS: Use your package manager (e.g., `sudo apt install ffmpeg`)
-   - Ensure FFmpeg is in your system PATH.
-4. **Add your OpenAI API key:**
-   - Create a `.env` file in the root directory:
-     ```env
-     OPENAI_API_KEY=your_openai_api_key_here
-     ```
-5. **Ensure the NSFW model is present:**
-   - Place `nsfw.299x299.h5` in the `nfsw_model/` directory.
-
-## Running the Application
-Before running the info make the folder named nfsw_model and put the nsfw model in it preferrably nsfw.299×299.h5
-The link for nsfw folder containg the model with .h5 extension
-```sh
-https://drive.google.com/drive/folders/1lq-cZm6vqRbb03iWxYPZjPjcyg8AKN_b?usp=drive_link
 ```
-```sh
-python main.py
-```
-The API will be available at [http://127.0.0.1:8000](http://127.0.0.1:8000)
-
-## API Endpoints
-### Text
-- `POST /text/analyze` — Analyze text for moderation and phone numbers
-- `POST /text/check_number` — Check for phone numbers in text
-
-### Image
-- `POST /image/predict` — Classify image and analyze extracted text
-- `POST /image/check_text` — Extract and analyze text from image
-
-### Audio
-- `POST /audio/transcribe` — Transcribe and analyze audio file
-- `POST /audio/transcribe_video` — Extract, transcribe, and analyze audio from video
-
-### Video
-- `POST /video/analyze_video` — Analyze video frames and audio
-
-## Example Usage
-You can use tools like [Postman](https://www.postman.com/) or `curl` to interact with the API. Example for text moderation:
-```sh
-curl -X POST "http://127.0.0.1:8000/text/analyze" -F "text=Your text here"
+.
+├── backend/     FastAPI + OpenAI + a local NSFW model
+└── frontend/    Aegis — Next.js 16 console, MVVM
 ```
 
-## Notes
-- All endpoints support CORS and can be accessed from any origin.
-- For best results, ensure your OpenAI API key is valid and you have a stable internet connection.
-- The NSFW model is required for image and video analysis.
+| | |
+| --- | --- |
+| **Text** | OpenAI omni-moderation across 13 policy categories, plus GPT phone-number extraction |
+| **Image** | NSFW Inception classifier over 5 classes, plus EasyOCR text moderation |
+| **Audio** | Whisper transcription in one-minute chunks, then transcript moderation |
+| **Video** | ~1 frame/second through the NSFW model, plus audio-track transcription |
 
-## License
-MIT License 
+## Quick start
+
+Two terminals.
+
+**1. Backend** — needs Python 3.10+, FFmpeg, and an OpenAI key:
+
+```sh
+cd backend
+python -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt
+cp .env.example .env          # add your OpenAI key
+python main.py                # http://127.0.0.1:8000
+```
+
+The NSFW model must be at `backend/app/nsfw_model/nsfw.299x299.h5`
+([download](https://drive.google.com/drive/folders/1lq-cZm6vqRbb03iWxYPZjPjcyg8AKN_b?usp=drive_link)).
+
+**2. Frontend:**
+
+```sh
+cd frontend
+npm install
+npm run dev                   # http://localhost:3000
+```
+
+The console shows an API status badge in the sidebar — if it reads "offline,"
+the backend is not up.
+
+Sample media for trying the analyzers lives in `backend/Data for testing apis/`.
+
+Scan-history metadata is stored persistently in
+`database/history/aegis-history.sqlite3`. SQLite is created automatically, has
+no application-level record cap, and replaces the old 100-item browser history.
+Uploaded media itself is not archived.
+
+## Documentation
+
+- [`backend/README.md`](backend/README.md) — endpoints, setup, behavior notes
+- [`backend/API_DOCUMENTATION.md`](backend/API_DOCUMENTATION.md) — full response examples
+- [`frontend/README.md`](frontend/README.md) — MVVM layering and the rules it enforces
+
+## Security
+
+`.env` is gitignored and must never be committed — it holds your OpenAI key.
+Use `backend/.env.example` as the template.
+
+Note that an OpenAI key was committed to this repository's history before that
+rule existed. It is no longer tracked, but it remains reachable in past commits
+and **should be rotated** at
+[platform.openai.com](https://platform.openai.com/account/api-keys).
