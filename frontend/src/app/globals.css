@@ -1,0 +1,116 @@
+@import "tailwindcss";
+
+/**
+ * Aegis ships a focused dark operator theme: graphite surfaces keep long
+ * moderation sessions calm, violet carries interaction, and mint is reserved
+ * for the brand's security signal.
+ *
+ * Data colors follow the two jobs actually present in this UI:
+ *   - magnitude → one sequential violet hue; bar length carries the value
+ *   - state     → the reserved status palette, always paired with an icon + label
+ * There is no categorical palette because nothing here encodes identity by hue.
+ */
+@theme {
+  /* Surfaces */
+  --color-canvas: #08090d;
+  --color-surface: #11131a;
+  --color-raised: #191c26;
+  --color-line: #252a38;
+  --color-line-strong: #3a4257;
+
+  /* Ink */
+  --color-ink: #f7f8fc;
+  --color-ink-2: #c4c9d4;
+  --color-muted: #8991a3;
+
+  /* Interaction + brand */
+  --color-brand: #7c6cf2;
+  --color-brand-bright: #9f93ff;
+  --color-brand-dim: #5d50c7;
+  --color-brand-deep: #3c337f;
+  --color-accent: #38d6bd;
+
+  /* Status (fixed, never themed, never reused as a series color) */
+  --color-good: #3bd294;
+  --color-warning: #f3be56;
+  --color-serious: #ff936b;
+  --color-critical: #f16270;
+
+  --font-sans: system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+:root {
+  color-scheme: dark;
+}
+
+html,
+body {
+  min-width: 320px;
+  background:
+    radial-gradient(circle at 80% -10%, rgba(124, 108, 242, 0.1), transparent 34rem),
+    radial-gradient(circle at 22% 110%, rgba(56, 214, 189, 0.05), transparent 30rem),
+    var(--color-canvas);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  min-height: 100vh;
+}
+
+button,
+a,
+input,
+textarea,
+select {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Columns of figures must align; standalone stat values keep proportional figures. */
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--color-brand) 40%, transparent);
+}
+
+/* Recessive scrollbars so long score lists don't shout. */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-line-strong) transparent;
+}
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+*::-webkit-scrollbar-thumb {
+  background: var(--color-line-strong);
+  border-radius: 4px;
+}
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+@keyframes aegis-sweep {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(320%);
+  }
+}
+.animate-sweep {
+  animation: aegis-sweep 1.6s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
