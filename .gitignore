@@ -31,3 +31,14 @@ next-env.d.ts
 .DS_Store
 .idea/
 *.swp
+
+# ---- Test fixtures ----
+# Sample uploads used to exercise the analyzers. Includes explicit imagery for
+# the NSFW model, so this must never reach a public remote.
+backend/Data for testing apis/
+
+# ---- Demo video ----
+# Large binaries: raw screencast frames, ffmpeg intermediates, and the rendered
+# film. Distributed directly rather than through the repo.
+video/
+video by codex/
