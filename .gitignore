@@ -35,7 +35,12 @@ next-env.d.ts
 # ---- Test fixtures ----
 # Sample uploads used to exercise the analyzers. Includes explicit imagery for
 # the NSFW model, so this must never reach a public remote.
-backend/Data for testing apis/
+# Unanchored on purpose: these match wherever the folder is moved to.
+Data for testing apis/
+Images_for_testing/
+Videos_For_testing/
+Audio_for_testing/
+ocr_testing_images/
 
 # ---- Demo video ----
 # Large binaries: raw screencast frames, ffmpeg intermediates, and the rendered

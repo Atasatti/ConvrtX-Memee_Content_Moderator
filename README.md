@@ -6,7 +6,8 @@ Next.js operator console.
 ```
 .
 ├── backend/     FastAPI + OpenAI + a local NSFW model
-└── frontend/    Aegis — Next.js 16 console, MVVM
+├── frontend/    Aegis — Next.js 16 console, MVVM
+└── database/    SQLite scan history (created at runtime)
 ```
 
 | | |
@@ -44,7 +45,10 @@ npm run dev                   # http://localhost:3000
 The console shows an API status badge in the sidebar — if it reads "offline,"
 the backend is not up.
 
-Sample media for trying the analyzers lives in `backend/Data for testing apis/`.
+Sample media for trying the analyzers is kept in `backend/Data for testing apis/`
+and is deliberately not published — the fixtures include explicit imagery used to
+exercise the NSFW classifier. Supply your own files, or any image and video will
+do.
 
 Scan-history metadata is stored persistently in
 `database/history/aegis-history.sqlite3`. SQLite is created automatically, has
