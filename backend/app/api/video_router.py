@@ -8,21 +8,40 @@ from tensorflow.keras.preprocessing.image import img_to_array
 import cv2
 from ..services import transcribe_audio_file
 import json
+import moviepy.editor as mp
+import tempfile
+import os
 
 
 # Define image categories
 image_categories = ['drawings', 'hentai', 'neutral', 'porn', 'sexy']
 
 # Load the model
+import os
+
+import os
+import tensorflow as tf
+import logging
+
 try:
+    # Get the absolute path to the project root (i.e., ConvrtX-Memee_Content_Moderator)
+    BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    
+    # Build the correct absolute path to the model
+    model_path = os.path.join(BASE_DIR, "nsfw_model", "nsfw.299x299.h5")
+    
+    # Load the model
     image_model = tf.keras.models.load_model(
-        r"..\nsfw_model\nsfw.299x299.h5",
+        model_path,
         compile=False,
         custom_objects={'Adam': tf.keras.optimizers.legacy.Adam}
     )
+
 except Exception as e:
-    logging.error(f"Failed to load model: {e}")
-    raise RuntimeError("Failed to initialize image model")
+    logging.error(f"❌ Failed to load NSFW model from: {model_path}\nError: {e}")
+    raise RuntimeError("Failed to initialize NSFW image model")
+
+
 
 # Create the router
 video_router = APIRouter(prefix="/video", tags=["video"])
@@ -32,7 +51,7 @@ video_router = APIRouter(prefix="/video", tags=["video"])
 async def analyze_video(file: UploadFile = File(...)):
     try:
         # Validate file extension
-        if not file.filename.lower().endswith(('.mp4', '.avi', '.mov', '.wmv')):
+        if not file.filename.lower().endswith((".mp4", ".avi", ".mov", ".wmv")):
             raise HTTPException(
                 status_code=400,
                 detail="Unsupported file format. Please upload a valid video file."
@@ -70,18 +89,30 @@ async def analyze_video(file: UploadFile = File(...)):
                 results.append(result)
                 top_categories.append(top_category)
 
-        # # Process and transcribe audio
-        # chunks = process_audio(contents)  # Use your existing process_audio function
-        # transcripts = []
-        # for i, chunk in enumerate(chunks):
-        #     chunk.name = file.filename  # Set the filename attribute for compatibility
-        #     transcript = await transcribe_audio_file(chunk, file.filename)
-        #     transcripts.append(transcript)
-    
-        # # Combine all transcripts into a single string
-        # full_transcription = "".join(transcripts)
+        # Extract audio from video using moviepy
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".mp4") as temp_video:
+            temp_video.write(contents)
+            temp_video_path = temp_video.name
+        temp_audio_path = None
+        try:
+            video_clip = mp.VideoFileClip(temp_video_path)
+            with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as temp_audio:
+                temp_audio_path = temp_audio.name
+                video_clip.audio.write_audiofile(temp_audio_path)
+            with open(temp_audio_path, "rb") as f:
+                audio_bytes = f.read()
+        finally:
+            if temp_audio_path and os.path.exists(temp_audio_path):
+                os.remove(temp_audio_path)
+            if os.path.exists(temp_video_path):
+                os.remove(temp_video_path)
 
-        full_transcription = await transcribe_audio_file(contents, file.filename)
+        full_transcription = await transcribe_audio_file(audio_bytes, "audio.wav")
+        if full_transcription is None:
+            raise HTTPException(
+                status_code=500,
+                detail="Audio transcription failed. Please check the audio format and try again."
+            )
 
         try:
             parsed_response = json.loads(full_transcription.body)
@@ -92,8 +123,10 @@ async def analyze_video(file: UploadFile = File(...)):
 
         except json.JSONDecodeError as json_err:
             print(f"JSON parsing error: {json_err}")
-
-
+            flagged = False
+            numbers = []
+            type = None
+            category_scores = []
 
         return {
              "Frames_classification": {

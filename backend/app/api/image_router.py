@@ -1,6 +1,8 @@
+import os
 import tensorflow as tf
 import numpy as np
 from fastapi import APIRouter, HTTPException, File, UploadFile
+from fastapi.responses import JSONResponse
 from io import BytesIO
 import logging
 from tensorflow.keras.preprocessing.image import load_img, img_to_array
@@ -19,14 +21,40 @@ image_categories = ['drawings', 'hentai', 'neutral', 'porn', 'sexy']
 
 # Load the model
 try:
+    # Absolute path to the model so the app runs from any working directory
+    BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    model_path = os.path.join(BASE_DIR, "nsfw_model", "nsfw.299x299.h5")
+
     image_model = tf.keras.models.load_model(
-        r"..\nsfw_model\nsfw.299x299.h5",
+        model_path,
         compile=False,
         custom_objects={'Adam': tf.keras.optimizers.legacy.Adam}
     )
 except Exception as e:
     logging.error(f"Failed to load model: {e}")
     raise RuntimeError("Failed to initialize image model")
+
+# EasyOCR loads its detection/recognition weights on construction, so build it
+# once and reuse it instead of paying that cost on every request.
+_ocr_reader = None
+
+
+def get_ocr_reader():
+    global _ocr_reader
+    if _ocr_reader is None:
+        _ocr_reader = easyocr.Reader(['en'])
+    return _ocr_reader
+
+
+def extract_image_text(contents: bytes) -> str:
+    """Run OCR and return the detected text as a single string.
+
+    `readtext(detail=0)` yields one string per detected box; analyze_text expects
+    a single string, so join them here rather than passing the list through.
+    """
+    chunks = get_ocr_reader().readtext(contents, detail=0)
+    return " ".join(chunks)
+
 
 @image_router.post("/predict")
 async def predict_image(file: UploadFile = File(...)):
@@ -55,22 +83,20 @@ async def predict_image(file: UploadFile = File(...)):
         numbers = []
         type = None
         category_scores = []
+        text = ""
 
-        
-        try:            
-            # Initialize EasyOCR
-            reader = easyocr.Reader(['en'])
-            
+
+        try:
             # Process the image from memory
-            text = reader.readtext(contents, detail=0)  # `detail=0` returns just the text
+            text = extract_image_text(contents)
             print("Extracted Text:", text)
-            
+
             text_analysis_result = await analyze_text(text)
-            # return result
 
             try:
                 parsed_response = json.loads(text_analysis_result.body)
-                flag = parsed_response.get("flag", False)
+                # analyze_text returns "flagged"; keep "flag" as a fallback.
+                flag = parsed_response.get("flagged", parsed_response.get("flag", False))
                 numbers = parsed_response.get("numbers", [])
                 type = parsed_response.get("type", None)
                 category_scores = parsed_response.get("category_scores", [])
@@ -78,7 +104,7 @@ async def predict_image(file: UploadFile = File(...)):
             except json.JSONDecodeError as json_err:
                 print(f"JSON parsing error: {json_err}")
                 # Continue with default values for flag and numbers
-        
+
         except ValueError as e:
             raise HTTPException(status_code=400, detail=str(e))
         except Exception as e:
@@ -91,10 +117,14 @@ async def predict_image(file: UploadFile = File(...)):
                 "top_category": top_category
             },
             "text_analysis": {
-                "flag": flag,
+                "flagged": flag,
+                "flag": flag,  # retained for backwards compatibility
                 "numbers": numbers,
                 "type": type,
-                "category_scores": category_scores
+                "category_scores": category_scores,
+                # Return what OCR actually read, so callers can see what the
+                # verdict was based on rather than trusting it blindly.
+                "extracted_text": text
             }
         }    
     except Exception as e:
@@ -110,17 +140,23 @@ async def check_image_text(file: UploadFile = File(...)):
     try:
         # Read the uploaded file
         contents = await file.read()
-        
-        # Initialize EasyOCR
-        reader = easyocr.Reader(['en'])
-        
+
         # Process the image from memory
-        text = reader.readtext(contents, detail=0)  # `detail=0` returns just the text
+        text = extract_image_text(contents)
         print("Extracted Text:", text)
-        
+
         result = await analyze_text(text)
-        return result
-    
+
+        # Fold the OCR output into the moderation payload so callers can see the
+        # text the verdict was based on. Preserve the original status code —
+        # analyze_text signals its own failures with a 500.
+        try:
+            payload = json.loads(result.body)
+            payload["extracted_text"] = text
+            return JSONResponse(content=payload, status_code=result.status_code)
+        except json.JSONDecodeError:
+            return result
+
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
