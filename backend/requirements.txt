@@ -3,12 +3,13 @@ numpy==2.1.3
 pandas==2.2.3
 opencv-python==4.10.0.84
 openai==1.54.4
+httpx==0.27.2
 tensorflow
 pydantic-settings
 uvicorn
 pydub
 easyocr
 av
-moviepy
+moviepy==1.0.3
 ffmpeg-python
-cv2
+uvicorn
